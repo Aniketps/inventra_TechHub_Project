@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+
+# Environment variables and secrets
+.env
+.env.*
+*.env
+
+# Logs
+npm-debug.log*
+
+# Debugging
+.vscode/
+.idea/
+
+# Cache
+.cache/
+.npm/
+.pnpm-store/
+.eslintcache
+
+# Package locks (optional if using only one lock manager)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
