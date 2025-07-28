@@ -15,4 +15,4 @@ conn.connect((err)=>{
     }
 });
 
-module.expots = conn;
+module.exports = conn;
