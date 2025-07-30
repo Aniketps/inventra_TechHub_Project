@@ -11,7 +11,7 @@ exports.getStoreInfo = ()=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -32,8 +32,8 @@ exports.updateStore = (name, location, owner, gstNum, phone, email, webURL, regN
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }

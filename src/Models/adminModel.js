@@ -21,7 +21,7 @@ exports.register = (name, email, password)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result };
+        return { "message" : result };
     }).catch((err)=>{
         return { "error" : err };
     });
@@ -58,7 +58,7 @@ exports.login = (email, password)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result };
+        return { "message" : result };
     }).catch((err)=>{
         return { "error" : err };
     })
@@ -78,7 +78,7 @@ exports.checkEmailExists = (email)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result };
+        return { "message" : result };
     }).catch((err)=>{
         return { "error" : err };
     });

@@ -24,7 +24,7 @@ exports.getAllSales = (itemCount)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -40,7 +40,7 @@ exports.getSaleByID = (id)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -61,7 +61,7 @@ exports.getSalesBySearching = (customerName, purchaseDate, productName, productC
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -85,8 +85,8 @@ exports.addSale = (stockID, quantity, discount, tax, totalBill, customerID)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
@@ -107,8 +107,8 @@ exports.updateSaleByID = (saleID, stockID, quantity, discount, tax, totalBill, c
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
@@ -129,8 +129,8 @@ exports.deleteSaleByID = (id)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }

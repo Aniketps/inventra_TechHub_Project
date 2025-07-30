@@ -24,7 +24,7 @@ exports.getAllWholesalers = (itemCount)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -40,7 +40,7 @@ exports.getWholesalerByID = (id)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -64,8 +64,8 @@ exports.addWholesaler = (name, address, date, phone, email)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
@@ -87,7 +87,7 @@ exports.getWholesalersBySeaching = (name, addres, connectedDate, phone, email)=>
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -107,7 +107,7 @@ exports.updateWholesalerByID = (id, name, address, phone, email)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -127,8 +127,8 @@ exports.deleteWholesalerByID = (id)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }

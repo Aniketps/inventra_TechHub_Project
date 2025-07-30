@@ -11,7 +11,7 @@ exports.getAllCustomers = ()=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -27,7 +27,7 @@ exports.getCustomerByID = (id)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -48,7 +48,7 @@ exports.getCustomersBySearching = (name, date, address, email, phone)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -68,8 +68,8 @@ exports.addCustomer = (name, email, phone, address)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
@@ -91,8 +91,8 @@ exports.updateCustomerByID = (id, name, email, phone, address)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
@@ -113,8 +113,8 @@ exports.deleteCustomerByID = (id)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }

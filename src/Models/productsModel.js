@@ -25,7 +25,7 @@ exports.getAllProducts = (itemCount)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -41,7 +41,7 @@ exports.getProductByID = (id)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -61,7 +61,7 @@ exports.getProductsBySearching = (name, date, category)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -86,8 +86,8 @@ exports.addProduct = (name, ID)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
@@ -112,8 +112,8 @@ exports.updateProductByID = (id, name, categoryID)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
@@ -134,8 +134,8 @@ exports.deleteProductByID = (id)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
