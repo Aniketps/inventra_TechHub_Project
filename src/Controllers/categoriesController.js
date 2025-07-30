@@ -2,8 +2,10 @@ const categoryModel = require("../Models/categoriesModel");
 
 
 exports.allCategories = async(req, res)=>{
+    const sliceCount = req.query.s;
     try{
-        const response = await categoryModel.getAllCategories();
+        // Default slices are 5
+        const response = sliceCount? await categoryModel.getAllCategories(parseInt(sliceCount)) : await categoryModel.getAllCategories(5);
         if("error" in response){
             res.status(512).json({"error" : "QUERY ISSUE", "massage" : response.error});
         }else{
@@ -89,7 +91,7 @@ exports.getCategoriesBySearching = async(req, res)=>{
 }
 
 exports.updateCategoryByID = async(req, res)=>{
-    if(!req.params.id || !req.body.name) return res.status(400).json({"error" : "QUERY ISSUE", "massage" : "Please provide id along with request"});
+    if(!req.params.id || !req.body.name) return res.status(400).json({"error" : "QUERY ISSUE", "massage" : "Please provide id and name along with request"});
     try{
         const response = await categoryModel.updateCategoryByID(req.params.id, req.body.name);
         if("error" in response){

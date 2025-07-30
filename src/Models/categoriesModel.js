@@ -1,13 +1,27 @@
 const category = require("../Databases/mainDatabase");
 
-exports.getAllCategories = ()=>{
+exports.getAllCategories = (itemCount)=>{
     return new Promise((resolve, reject)=>{
         category.query("select * from productcategory;", (err, result)=>{
             if(err){
                 // reject(err);
                 reject("failed to fetch, please try later sometime...");
             }else{
-                resolve(result);
+                let groupsOfCategories = {};
+                let group = [];
+                result.forEach((item, index)=>{
+                    if(index%itemCount == itemCount-1){
+                        group.push(item);
+                        groupsOfCategories[(index+1)/itemCount] = group;
+                        group = [];
+                    }else{
+                        group.push(item);
+                    }
+                });
+                if(group.length != 0){
+                    groupsOfCategories[Object.keys(groupsOfCategories).length+1] = group;
+                }
+                resolve(groupsOfCategories);
             }
         });
     }).then((result)=>{

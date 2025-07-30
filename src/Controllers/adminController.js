@@ -2,13 +2,23 @@ const admin = require("../Models/adminModel");
 const adminValidate = require("../Validations/adminValidation.js");
 const crypt = require("bcrypt");
 
-exports.login = (req, res)=>{
-    res.send("Admin Login");
+exports.login = async(req, res)=>{
+    const { email, password } = req.body;
+    if(!email || !password) return res.status(400).json({"error" : "QUESRY ISSUE", 'massage' : "Please provide all the paramters"});
+    let result = await admin.login(email, password);
+    if("error" in result){
+        res.status(512).json({"error" : "QUERY ISSUE", "massage" : result.error, "loginStatus" : false});
+    }else{
+        res.status(200).json({"error" : "NO ISSUE", "massage" : result.massage, "loginStatus" : true});
+    }
 }
 
 exports.register = (req, res)=>{
+    return res.status(403).json({"error" : "ACCESS ISSUE", "massage" : "Forbidden"});;
+
+    // Tempary not available
     const { name, email, password } = req.body;
-    if(!name || !email || !password) return res.status(400).json({"error" : "QUESRY ISSUE", 'massage' : "Please provide paramters"});
+    if(!name || !email || !password) return res.status(400).json({"error" : "QUESRY ISSUE", 'massage' : "Please provide all the paramters"});
     
     // Validations
     let isValidEmail = adminValidate.emailVaidation(email);
