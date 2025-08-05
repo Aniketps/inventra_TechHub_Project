@@ -25,7 +25,7 @@ exports.getAllCategories = (itemCount)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -41,7 +41,7 @@ exports.getCatergoryByID = (id)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -50,16 +50,28 @@ exports.getCatergoryByID = (id)=>{
 exports.getCategoriesBySearching = (name, date)=>{
     return new Promise((resolve, reject)=>{
         let Name = `%${name}%`;
-        let Date = `%${date}%`;
-        category.query("select * from productcategory where categoryName like ? and createdDate like ?;", [Name, Date], (err, result)=>{
+        let myQuery = "select * from productcategory where categoryName like ?";
+        let myValues = [Name];
+        category.query(myQuery, myValues, (err, result)=>{
             if(err){
+                console.log(err);
                 reject("failed get categories, please try later sometime...");
             }else{
-                resolve(result);
+                console.log(date);
+                let data = result.filter(row => date == ''
+                    ? true 
+                    : row.createdDate.toISOString().split("T")[0] == date).map((row)=>(
+                        {
+                            ...row,
+                            createdDate : row.createdDate.toISOString().split("T")[0].trim()
+                        }
+                    ));
+                resolve(data);
             }
         });
+        
     }).then((result)=>{
-        return { "massage" : result}
+        return { "message" : result}
     }).catch((error)=>{
         return { "error" : error }
     });
@@ -71,21 +83,21 @@ exports.addCategory = (name)=>{
             if(err){
                 // reject(err);
                 if(err.code == "ER_DUP_ENTRY"){
-                    reject(name+" is duplicate entry");
+                    reject(name+" is already present.");
                 }else{
-                    reject(err.sqlMassage);
+                    reject(err.sqlMessage);
                 }
             }else{
                 if(result.affectedRows>0){
-                    resolve("success");
+                    resolve("Successfully Added");
                 }else{
                     reject("unknown");
                 }
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
@@ -97,13 +109,13 @@ exports.updateCategoryByID = (id, name)=>{
         category.query("update productcategory set categoryName = ? where categoryID = ?", [name, id], (err, result)=>{
             if(err){
                 if(err.code == "ER_DUP_ENTRY"){
-                    reject(name+" is duplicate entry");
+                    reject(name+" is already present.");
                 }else{
-                    reject(err.sqlMassage);
+                    reject(err.sqlMessage);
                 }
             }else{
                 if(result.affectedRows>0){
-                    resolve("success updated");
+                    resolve("Succenfully Updated");
                 }else{
                     reject("field with id "+id+" does not exists");
                 }
@@ -111,8 +123,8 @@ exports.updateCategoryByID = (id, name)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
@@ -123,7 +135,7 @@ exports.deleteCategoryByID = (id)=>{
     return new Promise((resolve, reject)=>{
         category.query("delete from productcategory where categoryID = ?", [id], (err, result)=>{
             if(err){
-                reject(err.sqlMassage);
+                reject(err.sqlMessage);
             }else{
                 if(result.affectedRows>0){
                     resolve("success deleted");
@@ -133,8 +145,8 @@ exports.deleteCategoryByID = (id)=>{
             }
         });
     }).then((result)=>{
-        console.log("massage is :"+result);
-        return { "massage" : result}
+        console.log("message is :"+result);
+        return { "message" : result}
     }).catch((error)=>{
         console.log("error is :"+error);
         return { "error" : error }
