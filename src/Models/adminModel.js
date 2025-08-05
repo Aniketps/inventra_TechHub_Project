@@ -21,7 +21,7 @@ exports.register = (name, email, password)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result };
+        return { "message" : result };
     }).catch((err)=>{
         return { "error" : err };
     });
@@ -36,6 +36,7 @@ exports.login = (email, password)=>{
                 if(result.length > 0){
                     let isValid = await crypt.compare(password, result[0].password);
                     if(isValid){
+                        // result[0].password = "123456"
                         result[0].password = "Can't be visible"
                         result[0].token = jwt.sign({
                             email : result[0].email,
@@ -58,7 +59,7 @@ exports.login = (email, password)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result };
+        return { "message" : result };
     }).catch((err)=>{
         return { "error" : err };
     })
@@ -78,7 +79,7 @@ exports.checkEmailExists = (email)=>{
             }
         });
     }).then((result)=>{
-        return { "massage" : result };
+        return { "message" : result };
     }).catch((err)=>{
         return { "error" : err };
     });

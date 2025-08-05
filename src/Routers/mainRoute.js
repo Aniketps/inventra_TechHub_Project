@@ -10,6 +10,8 @@ const retailStoreRoute = require("./retailStoreRoute.js");
 const wholesalersRoute = require("./wholesalersRoute.js");
 const salesRoute = require("./salesRoute.js");
 const adminRoute = require('./adminRoute.js');
+const productStockRoute = require('./productStockRoute.js');
+const wholesalerErodcuctEntriesRoute = require('./wholesalerProductExntries.js');
 
 router.use("/", mainMiddleware.mainMiddleware);
 router.get("/", mainController.mainController);
@@ -33,5 +35,11 @@ router.use("/sales", salesRoute);
 
 router.use("/wholesalers", routerMiddleware.wholesalerMiddleware);
 router.use("/wholesalers", wholesalersRoute);
+
+router.use("/stocks", routerMiddleware.stockMiddleware);
+router.use("/stocks", productStockRoute);
+
+router.use("/wholesalerprodcuctentries", routerMiddleware.stockMiddleware);
+router.use("/wholesalerprodcuctentries", wholesalerErodcuctEntriesRoute);
 
 module.exports = router;
