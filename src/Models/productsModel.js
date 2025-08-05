@@ -50,14 +50,19 @@ exports.getProductByID = (id)=>{
 exports.getProductsBySearching = (name, date, category)=>{
     return new Promise((resolve, reject)=>{
         let Name = `%${name}%`;
-        let Date = `%${date}%`;
         let Category = `%${category}%`;
-        product.query("select * from (select p.productID, p.productName, p.createdDate as productCreatedDate, pc.categoryName, pc.createdDate as categoryCreatedDate from products p inner join productcategory pc on p.categoryID=pc.categoryID) pp where productName like ? and productCreatedDate like ? and categoryName like ?", [Name, Date, Category], (err, result)=>{
+        product.query("select * from (select p.productID, p.productName, p.createdDate as productCreatedDate, pc.categoryName, pc.createdDate as categoryCreatedDate from products p inner join productcategory pc on p.categoryID=pc.categoryID) pp where productName like ? and categoryName like ?", [Name, Category], (err, result)=>{
             if(err){
-                console.log(err);
                 reject("failed get products, please try later sometime...");
             }else{
-                resolve(result);
+                let data = result.filter(row => date == ''? true : row.productCreatedDate.toISOString().split("T")[0] == date).map( row =>
+                (
+                    {
+                        ...row,
+                        productCreatedDate : row.productCreatedDate.toISOString().split("T")[0]
+                    }
+                ))
+                resolve(data);
             }
         });
     }).then((result)=>{
@@ -98,10 +103,13 @@ exports.updateProductByID = (id, name, categoryID)=>{
     return new Promise((resolve, reject)=>{
         product.query("update products set productName = ?, categoryID = ? where productID = ?", [name, categoryID, id], (err, result)=>{
             if(err){
+                console.log(err.code);
                 if(err.code == "ER_DUP_ENTRY"){
                     reject(name+" is duplicate entry");
+                }else if(err.code == 'ER_NO_REFERENCED_ROW_2'){
+                    reject("Customer or category is not available");
                 }else{
-                    reject(err.sqlMassage);
+                    reject(err.sqlMessage);
                 }
             }else{
                 if(result.affectedRows>0){

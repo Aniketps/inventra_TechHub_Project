@@ -14,7 +14,7 @@ exports.login = async(req, res)=>{
 }
 
 exports.register = (req, res)=>{
-    return res.status(403).json({"error" : "ACCESS ISSUE", "message" : "Forbidden"});;
+    // return res.status(403).json({"error" : "ACCESS ISSUE", "message" : "Forbidden"});;
 
     // Tempary not available
     const { name, email, password } = req.body;

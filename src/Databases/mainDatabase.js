@@ -4,7 +4,8 @@ const conn = mysql.createConnection({
     host : process.env.dbHost,
     password : process.env.dbPass,
     user : process.env.dbUser,
-    database : process.env.dbName
+    database : process.env.dbName,
+    timezone: 'local',
 });
 
 conn.connect((err)=>{

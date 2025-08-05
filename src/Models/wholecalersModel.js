@@ -72,18 +72,23 @@ exports.addWholesaler = (name, address, date, phone, email)=>{
     });
 };
 
-exports.getWholesalersBySeaching = (name, addres, connectedDate, phone, email)=>{
+exports.getWholesalersBySeaching = (name, addres, date, phone, email)=>{
     return new Promise((resolve, reject)=>{
         let Name = `%${name}%`;
         let Address = `%${addres}%`;
-        let Date = `%${connectedDate}%`;
         let Phone = `%${phone}%`;
         let Email = `%${email}%`;
-        wholesaler.query("select * from wholesalers where wholesalerName like ? and address like ? and connectedDate like ? and phone like ? and email like ?", [Name, Address, Date, Phone, Email], (err, result)=>{
+        wholesaler.query("select * from wholesalers where wholesalerName like ? and address like ? and phone like ? and email like ?", [Name, Address, Phone, Email], (err, result)=>{
             if(err){
                 reject("failed get sales, please try later sometime...");
             }else{
-                resolve(result);
+                let data = result.filter(row => date == ''? true : row.connectedDate.toISOString().split("T")[0] == date).map(row =>(
+                    {
+                        ...row,
+                        connectedDate : row.connectedDate.toISOString().split("T")[0]
+                    }
+                ))
+                resolve(data);
             }
         });
     }).then((result)=>{

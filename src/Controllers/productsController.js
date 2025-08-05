@@ -13,7 +13,7 @@ exports.allProducts = async(req, res) => {
                     "error": "NO ISSUE",
                     "message": "successfully fetched",
                     "data": response.message,
-                    "totalEntries": response.message.length
+                    "totalEntries": Object.keys(response.message).length
                 }
             );
         }

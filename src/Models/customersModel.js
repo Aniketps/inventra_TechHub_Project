@@ -1,13 +1,27 @@
 const customer = require("../Databases/mainDatabase");
 
-exports.getAllCustomers = ()=>{
+exports.getAllCustomers = (itemCount)=>{
     return new Promise((resolve, reject)=>{
         customer.query("select * from customers;", (err, result)=>{
             if(err){
                 // reject(err);
                 reject("failed to fetch, please try later sometime...");
             }else{
-                resolve(result);
+                let groupsOfCustomers = {};
+                let group = [];
+                result.forEach((item, index)=>{
+                    if(index%itemCount == itemCount-1){
+                        group.push(item);
+                        groupsOfCustomers[(index+1)/itemCount] = group;
+                        group = [];
+                    }else{
+                        group.push(item);
+                    }
+                });
+                if(group.length != 0){
+                    groupsOfCustomers[Object.keys(groupsOfCustomers).length+1] = group;
+                }
+                resolve(groupsOfCustomers);
             }
         });
     }).then((result)=>{
@@ -36,15 +50,25 @@ exports.getCustomerByID = (id)=>{
 exports.getCustomersBySearching = (name, date, address, email, phone)=>{
     return new Promise((resolve, reject)=>{
         let Name = `%${name}%`;
-        let Date = `%${date}%`;
         let Phone = `%${phone}%`;
         let Email = `%${email}%`;
         let Address = `%${address}%`;
-        customer.query("select * from customers where customerName like ? and registeredDate like ? and email like ? and phone like ? and address like ?;", [Name, Date, Email, Phone, Address], (err, result)=>{
+        let myQuery = "select * from customers where customerName like ? and email like ? and phone like ? and address like ?";
+        let myValues = [Name, Email, Phone, Address];
+        customer.query(myQuery, myValues, (err, result)=>{
             if(err){
                 reject("failed get customers, please try later sometime...");
             }else{
-                resolve(result);
+                let data = result.filter(row => date == ''
+                    ? true 
+                    : row.registeredDate.toISOString().split("T")[0] == date).map(row=>(
+                        {
+                            ...row,
+                            registeredDate : row.registeredDate.toISOString().split("T")[0]
+                        }
+                    )
+                );
+                resolve(data);
             }
         });
     }).then((result)=>{
@@ -58,7 +82,11 @@ exports.addCustomer = (name, email, phone, address)=>{
     return new Promise((resolve, reject)=>{
         customer.query("insert into customers values ('0', ?, ?, ?, ?, current_Date)", [name, email, phone, address], (err, result)=>{
             if(err){
-                reject(err.sqlMessage);
+                if(err.code == "ER_DUP_ENTRY"){
+                    reject("Customer already exists");
+                }else{
+                    reject(err.sqlMessage);
+                }
             }else{
                 if(result.affectedRows>0){
                     resolve("success");

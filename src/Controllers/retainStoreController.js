@@ -11,6 +11,7 @@ exports.retailStoreInfo = async(req, res) => {
                     "error": "NO ISSUE",
                     "message": "successfully fetched",
                     "data": response.message,
+                    "totalEntries": Object.keys(response.message).length
                 }
             );
         }

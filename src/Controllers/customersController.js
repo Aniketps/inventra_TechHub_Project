@@ -1,8 +1,9 @@
 const customerModel = require("../Models/customersModel");
 
 exports.allCustomers = async(req, res)=>{
+    const sliceCount = req.query.s;
     try{
-        const response = await customerModel.getAllCustomers();
+        const response = sliceCount? await customerModel.getAllCustomers(parseInt(sliceCount)) : await customerModel.getAllCustomers(10);
         if("error" in response){
             res.status(512).json({"error" : "QUERY ISSUE", "message" : response.error});
         }else{
@@ -11,7 +12,7 @@ exports.allCustomers = async(req, res)=>{
                     "error" : "NO ISSUE", 
                     "message" : "successfully fetched", 
                     "data" : response.message, 
-                    "totalEntries" : response.message.length
+                    "totalEntries": Object.keys(response.message).length
                 }
             );
         }

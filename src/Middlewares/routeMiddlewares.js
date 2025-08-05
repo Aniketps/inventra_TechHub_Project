@@ -91,3 +91,15 @@ exports.adminMiddleware = (req, res, next)=>{
         next();
     })
 }
+
+exports.stockMiddleware = (req, res, next)=>{
+    const auth = req.headers["authorization"];
+    if(!auth) return res.status(401).json({"error" : "TOKEN ISSUE", "message" : "Please check for header if added or not"});
+
+    const token = auth.split(" ")[1];
+
+    jwt.verify(token, process.env.jwtSecret, (err)=>{
+        if(err) return res.status(403).json({"error" : "TOKEN ISSUE", "message" : "Forbidden"});
+        next();
+    })
+}

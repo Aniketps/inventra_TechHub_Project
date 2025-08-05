@@ -46,18 +46,23 @@ exports.getSaleByID = (id)=>{
     });
 };
 
-exports.getSalesBySearching = (customerName, purchaseDate, productName, productCategory, wholesalerName)=>{
+exports.getSalesBySearching = (customerName, date, productName, productCategory, wholesalerName)=>{
     return new Promise((resolve, reject)=>{
         let CustomerName = `%${customerName}%`;
-        let PurchaseDate = `%${purchaseDate}%`;
         let ProductName = `%${productName}%`;
         let ProductCategory = `%${productCategory}%`;
         let WholesalerName = `%${wholesalerName}%`;
-        sale.query("select * from (select s.stockID, c.customerName, c.phone, s.purchaseDate, p.productName, cc.categoryName, w.wholesalerName, s.quantity, s.discount, s.tax, s.totalBill from sales s inner join productstocks ps on ps.stockID=s.stockID inner join customers c on c.customerID=s.customerID inner join products p on p.productID=ps.productID inner join productcategory cc on cc.categoryID=p.categoryID inner join wholesalers w on w.wholesalerID=ps.wholesalerID) ss where customerName like ? and purchaseDate like ? and productName like ? and categoryName like ? and wholesalerName like ?", [CustomerName, PurchaseDate, ProductName, ProductCategory, WholesalerName], (err, result)=>{
+        sale.query("select * from (select s.stockID, c.customerName, c.phone, s.purchaseDate, p.productName, cc.categoryName, w.wholesalerName, s.quantity, s.discount, s.tax, s.totalBill from sales s inner join productstocks ps on ps.stockID=s.stockID inner join customers c on c.customerID=s.customerID inner join products p on p.productID=ps.productID inner join productcategory cc on cc.categoryID=p.categoryID inner join wholesalers w on w.wholesalerID=ps.wholesalerID) ss where customerName like ? and productName like ? and categoryName like ? and wholesalerName like ?", [CustomerName, ProductName, ProductCategory, WholesalerName], (err, result)=>{
             if(err){
                 reject("failed get sales, please try later sometime...");
             }else{
-                resolve(result);
+                let data = result.filter( row => date == ''? true : row.purchaseDate.toISOString().split("T")[0] == date).map( row => (
+                    {
+                        ...row,
+                        purchaseDate : row.purchaseDate.toISOString().split("T")[0]
+                    }
+                ))
+                resolve(data);
             }
         });
     }).then((result)=>{
@@ -72,7 +77,7 @@ exports.addSale = (stockID, quantity, discount, tax, totalBill, customerID)=>{
         sale.query("insert into sales values ('0', ?, current_Date, ?, ?, ?, ?, ?)", [stockID, quantity, discount, tax, totalBill, customerID], (err, result)=>{
             if(err){
                 if(err.code == "ER_NO_REFERENCED_ROW_2"){
-                    reject("Customer dont exists");
+                    reject("Customer or Product in stock dont exists");
                 }else{
                     reject(err.sqlMessage);
                 }
@@ -97,7 +102,11 @@ exports.updateSaleByID = (saleID, stockID, quantity, discount, tax, totalBill, c
     return new Promise((resolve, reject)=>{
         sale.query("update sales set stockID = ?, quantity = ?, discount = ?, tax = ?, totalBill = ?, customerID = ? where saleID = ?", [stockID, quantity, discount, tax, totalBill, customerID, saleID], (err, result)=>{
             if(err){
-                reject(err.sqlMessage);
+                if(err.code == "ER_NO_REFERENCED_ROW_2"){
+                    reject("Product in stock or customer dont exists");
+                }else{
+                    reject(err.sqlMessage);
+                }
             }else{
                 if(result.affectedRows>0){
                     resolve("Updated Successfully");
@@ -107,10 +116,8 @@ exports.updateSaleByID = (saleID, stockID, quantity, discount, tax, totalBill, c
             }
         });
     }).then((result)=>{
-        console.log("message is :"+result);
         return { "message" : result}
     }).catch((error)=>{
-        console.log("error is :"+error);
         return { "error" : error }
     });
 };

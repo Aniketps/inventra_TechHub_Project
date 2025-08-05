@@ -50,14 +50,26 @@ exports.getCatergoryByID = (id)=>{
 exports.getCategoriesBySearching = (name, date)=>{
     return new Promise((resolve, reject)=>{
         let Name = `%${name}%`;
-        let Date = `%${date}%`;
-        category.query("select * from productcategory where categoryName like ? and createdDate like ?;", [Name, Date], (err, result)=>{
+        let myQuery = "select * from productcategory where categoryName like ?";
+        let myValues = [Name];
+        category.query(myQuery, myValues, (err, result)=>{
             if(err){
+                console.log(err);
                 reject("failed get categories, please try later sometime...");
             }else{
-                resolve(result);
+                console.log(date);
+                let data = result.filter(row => date == ''
+                    ? true 
+                    : row.createdDate.toISOString().split("T")[0] == date).map((row)=>(
+                        {
+                            ...row,
+                            createdDate : row.createdDate.toISOString().split("T")[0].trim()
+                        }
+                    ));
+                resolve(data);
             }
         });
+        
     }).then((result)=>{
         return { "message" : result}
     }).catch((error)=>{
