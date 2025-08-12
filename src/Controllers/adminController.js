@@ -1,6 +1,7 @@
 const admin = require("../Models/adminModel");
 const adminValidate = require("../Validations/adminValidation.js");
 const crypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 exports.login = async(req, res)=>{
     const { email, password } = req.body;
@@ -41,4 +42,15 @@ exports.register = (req, res)=>{
                 ? res.status(512).json({"error" : "QUERY ISSUE", "message" : "Please provide stronger password having at least 6 char"}) 
                 : res.status(512).json({"error" : "QUERY ISSUE", "message" : "Please follow name format only latters allowed"})
     }
+}
+
+exports.validateToken = (req, res)=>{
+    const token = req.body.token;
+    jwt.verify(token.split(" ")[1], process.env.jwtSecret, (err) => {
+        if (err) {
+            res.status(404).json({ "message": "Access Denied", "user": false });
+        } else {    
+            res.status(200).json({ "message": "Access Grand", "user": true });
+        }
+    });
 }
