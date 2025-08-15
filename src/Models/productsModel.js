@@ -2,7 +2,7 @@ const product = require("../Databases/mainDatabase");
 
 exports.getAllProducts = (itemCount)=>{
     return new Promise((resolve, reject)=>{
-        product.query("select p.productID, p.productName, p.createdDate as productCreatedDate, pc.categoryName, pc.createdDate as categoryCreatedDate from products p inner join productcategory pc on p.categoryID=pc.categoryID", (err, result)=>{
+        product.query("select p.productID, p.productName, p.categoryID, p.createdDate as productCreatedDate, pc.categoryName, pc.createdDate as categoryCreatedDate from products p inner join productcategory pc on p.categoryID=pc.categoryID", (err, result)=>{
             if(err){
                 // reject(err);
                 reject("failed to fetch, please try later sometime...");
