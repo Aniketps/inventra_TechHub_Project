@@ -82,13 +82,27 @@ exports.getWholesalersBySeaching = (name, addres, date, phone, email)=>{
             if(err){
                 reject("failed get sales, please try later sometime...");
             }else{
+                let groupsOfWholesalers = {};
+                let group = [];
                 let data = result.filter(row => date == ''? true : row.connectedDate.toISOString().split("T")[0] == date).map(row =>(
                     {
                         ...row,
                         connectedDate : row.connectedDate.toISOString().split("T")[0]
                     }
-                ))
-                resolve(data);
+                ));
+                data.forEach((item, index)=>{
+                    if(index%10 == 10-1){
+                        group.push(item);
+                        groupsOfWholesalers[(index+1)/10] = group;
+                        group = [];
+                    }else{
+                        group.push(item);
+                    }
+                });
+                if(group.length != 0){
+                    groupsOfWholesalers[Object.keys(groupsOfWholesalers).length+1] = group;
+                }
+                resolve(groupsOfWholesalers);
             }
         });
     }).then((result)=>{

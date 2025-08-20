@@ -52,17 +52,31 @@ exports.getSalesBySearching = (customerName, date, productName, productCategory,
         let ProductName = `%${productName}%`;
         let ProductCategory = `%${productCategory}%`;
         let WholesalerName = `%${wholesalerName}%`;
-        sale.query("select * from (select s.stockID, c.customerName, c.phone, s.purchaseDate, p.productName, cc.categoryName, w.wholesalerName, s.quantity, s.discount, s.tax, s.totalBill from sales s inner join productstocks ps on ps.stockID=s.stockID inner join customers c on c.customerID=s.customerID inner join products p on p.productID=ps.productID inner join productcategory cc on cc.categoryID=p.categoryID inner join wholesalers w on w.wholesalerID=ps.wholesalerID) ss where customerName like ? and productName like ? and categoryName like ? and wholesalerName like ?", [CustomerName, ProductName, ProductCategory, WholesalerName], (err, result)=>{
+        sale.query("select * from (select s.stockID, s.saleID, c.customerName, c.phone, s.purchaseDate, p.productName, cc.categoryName, w.wholesalerName, s.quantity, s.discount, s.tax, s.totalBill from sales s inner join productstocks ps on ps.stockID=s.stockID inner join customers c on c.customerID=s.customerID inner join products p on p.productID=ps.productID inner join productcategory cc on cc.categoryID=p.categoryID inner join wholesalers w on w.wholesalerID=ps.wholesalerID) ss where customerName like ? and productName like ? and categoryName like ? and wholesalerName like ?", [CustomerName, ProductName, ProductCategory, WholesalerName], (err, result)=>{
             if(err){
                 reject("failed get sales, please try later sometime...");
             }else{
-                let data = result.filter( row => date == ''? true : row.purchaseDate.toISOString().split("T")[0] == date).map( row => (
+                let groupsOfSalers = {};
+                let group = [];
+                let data = result.filter(row => date == ''? true : row.purchaseDate.toISOString().split("T")[0] == date).map(row =>(
                     {
                         ...row,
                         purchaseDate : row.purchaseDate.toISOString().split("T")[0]
                     }
-                ))
-                resolve(data);
+                ));
+                data.forEach((item, index)=>{
+                    if(index%10 == 10-1){
+                        group.push(item);
+                        groupsOfSalers[(index+1)/10] = group;
+                        group = [];
+                    }else{
+                        group.push(item);
+                    }
+                });
+                if(group.length != 0){
+                    groupsOfSalers[Object.keys(groupsOfSalers).length+1] = group;
+                }
+                resolve(groupsOfSalers);
             }
         });
     }).then((result)=>{

@@ -50,7 +50,7 @@ exports.getWholesalerProductEntriesBySearching = (productName, wholesalerName, d
     return new Promise((resolve, reject)=>{
         let ProductName = `%${productName}%`;
         let WholesalerName = `%${wholesalerName}%`;
-        wholesalerProductEntry.query("select wpe.wholesalerProductID, p.productName, w.wholesalerName, wpe.entryDate, wpe.stock, wpe.costPrice, wpe.totalCost from wholesalerproductentry wpe inner join wholesalers w on wpe.wholesalerID=w.wholesalerID inner join products p on wpe.productID=p.productID where p.productName like ? and w.wholesalerName like ?", [ProductName, WholesalerName], (err, result)=>{
+        wholesalerProductEntry.query("select wpe.wholesalerProductID, p.productName, p.productID, w.wholesalerName, w.wholesalerID, wpe.entryDate, wpe.stock, wpe.costPrice, wpe.totalCost from wholesalerproductentry wpe inner join wholesalers w on wpe.wholesalerID=w.wholesalerID inner join products p on wpe.productID=p.productID where p.productName like ? and w.wholesalerName like ?", [ProductName, WholesalerName], (err, result)=>{
             if(err){
                 reject("failed get wholesalerProductEntries, please try later sometime...");
             }else{
@@ -60,7 +60,21 @@ exports.getWholesalerProductEntriesBySearching = (productName, wholesalerName, d
                         entryDate : row.entryDate.toISOString().split("T")[0]
                     }
                 ))
-                resolve(data);
+                let groupsOfWholesalerProductEntries = {};
+                let group = [];
+                data.forEach((item, index)=>{
+                    if(index%10 == 10-1){
+                        group.push(item);
+                        groupsOfWholesalerProductEntries[(index+1)/10] = group;
+                        group = [];
+                    }else{
+                        group.push(item);
+                    }
+                });
+                if(group.length != 0){
+                    groupsOfWholesalerProductEntries[Object.keys(groupsOfWholesalerProductEntries).length+1] = group;
+                }
+                resolve(groupsOfWholesalerProductEntries);
             }
         });
     }).then((result)=>{

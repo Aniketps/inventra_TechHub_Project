@@ -57,16 +57,27 @@ exports.getCategoriesBySearching = (name, date)=>{
                 console.log(err);
                 reject("failed get categories, please try later sometime...");
             }else{
-                console.log(date);
-                let data = result.filter(row => date == ''
-                    ? true 
-                    : row.createdDate.toISOString().split("T")[0] == date).map((row)=>(
-                        {
-                            ...row,
-                            createdDate : row.createdDate.toISOString().split("T")[0].trim()
-                        }
-                    ));
-                resolve(data);
+                let groupsOfCategories = {};
+                let group = [];
+                let data = result.filter(row => date == ''? true : row.createdDate.toISOString().split("T")[0] == date).map(row =>(
+                    {
+                        ...row,
+                        createdDate : row.createdDate.toISOString().split("T")[0]
+                    }
+                ));
+                data.forEach((item, index)=>{
+                    if(index%10 == 10-1){
+                        group.push(item);
+                        groupsOfCategories[(index+1)/10] = group;
+                        group = [];
+                    }else{
+                        group.push(item);
+                    }
+                });
+                if(group.length != 0){
+                    groupsOfCategories[Object.keys(groupsOfCategories).length+1] = group;
+                }
+                resolve(groupsOfCategories);
             }
         });
         

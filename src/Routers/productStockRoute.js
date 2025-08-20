@@ -16,10 +16,10 @@ stockRoute.get("/totalcost", stock.getStockByTotalCost);
 stockRoute.get("/price", stock.getStockByPrice);
 
 // Search by stock wholesaler name
-stockRoute.get("/wholesaler", stock.getStockByWholesalerName);
+stockRoute.get("/:w/:p", stock.getStockBySearching);
 
 // Search by stock wholesaler id
-stockRoute.get("/wholesaler", stock.getStockByWholesalerID);
+stockRoute.get("/:w/:p", stock.getStockBySearching);
 
 stockRoute.get("/:id", stock.getStockByID);
 

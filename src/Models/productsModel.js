@@ -62,7 +62,23 @@ exports.getProductsBySearching = (name, date, category)=>{
                         productCreatedDate : row.productCreatedDate.toISOString().split("T")[0]
                     }
                 ))
-                resolve(data);
+
+                let groupsOfProducts = {};
+                let group = [];
+                data.forEach((item, index)=>{
+                    if(index%10 == 10-1){
+                        group.push(item);
+                        groupsOfProducts[(index+1)/10] = group;
+                        group = [];
+                    }else{
+                        group.push(item);
+                    }
+                });
+                if(group.length != 0){
+                    groupsOfProducts[Object.keys(groupsOfProducts).length+1] = group;
+                }
+
+                resolve(groupsOfProducts);
             }
         });
     }).then((result)=>{
@@ -80,7 +96,7 @@ exports.addProduct = (name, ID)=>{
                 if(err.code == "ER_DUP_ENTRY"){
                     reject(name+" is duplicate entry");
                 }else{
-                    reject(err.sqlMassage);
+                    reject(err.sqlMessage);
                 }
             }else{
                 if(result.affectedRows>0){

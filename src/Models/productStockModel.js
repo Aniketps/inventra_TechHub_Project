@@ -136,14 +136,30 @@ exports.getStockByPrice = (price)=>{
     });
 };
 
-exports.getStockByWholesalerName = (name)=>{
+exports.getStockBySearching = (wName, pName)=>{
     return new Promise((resolve, reject)=>{
-        let Name = `%${name}%`;
-        stock.query("select s.stockID, p.productName, s.stock, w.wholesalerName, s.totalCost, s.sellingPrice from productstocks s inner join products p on s.productID=p.productID inner join wholesalers w on w.wholesalerID = s.wholesalerID where w.wholesalerName like ?", [Name], (err, result)=>{
+        let WName = `%${wName}%`;
+        let PName = `%${pName}%`;
+        stock.query("select s.stockID, p.productName, p.productID, s.stock, w.wholesalerName, w.wholesalerID, s.totalCost, s.sellingPrice from productstocks s inner join products p on s.productID=p.productID inner join wholesalers w on w.wholesalerID = s.wholesalerID where w.wholesalerName like ? and p.productName like ?", [WName, PName], (err, result)=>{
             if(err){
                 reject("failed get sales, please try later sometime...");
             }else{
-                resolve(result);
+                let groupsOfProducts = {};
+                let group = [];
+                result.forEach((item, index)=>{
+                    if(index%10 == 10-1){
+                        group.push(item);
+                        groupsOfProducts[(index+1)/10] = group;
+                        group = [];
+                    }else{
+                        group.push(item);
+                    }
+                });
+                if(group.length != 0){
+                    groupsOfProducts[Object.keys(groupsOfProducts).length+1] = group;
+                }
+
+                resolve(groupsOfProducts);
             }
         });
     }).then((result)=>{

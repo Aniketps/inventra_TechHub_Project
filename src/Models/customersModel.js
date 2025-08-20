@@ -68,7 +68,21 @@ exports.getCustomersBySearching = (name, date, address, email, phone)=>{
                         }
                     )
                 );
-                resolve(data);
+                let groupsOfCustomers = {};
+                let group = [];
+                data.forEach((item, index)=>{
+                    if(index%10 == 10-1){
+                        group.push(item);
+                        groupsOfCustomers[(index+1)/10] = group;
+                        group = [];
+                    }else{
+                        group.push(item);
+                    }
+                });
+                if(group.length != 0){
+                    groupsOfCustomers[Object.keys(groupsOfCustomers).length+1] = group;
+                }
+                resolve(groupsOfCustomers);
             }
         });
     }).then((result)=>{

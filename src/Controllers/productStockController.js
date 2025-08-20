@@ -140,8 +140,8 @@ exports.getStockByPrice = async(req, res)=>{
     }
 }
 
-exports.getStockByWholesalerName = async(req, res)=>{
-    if(!req.query.n){
+exports.getStockBySearching = async(req, res)=>{
+    if(!req.params.w || !req.params.p){
         if(req.query.i){
             return this.getStockByWholesalerID(req, res);
         }else{
@@ -149,8 +149,9 @@ exports.getStockByWholesalerName = async(req, res)=>{
         }
     };
     try{
-        let n = req.query.n;
-        const response = await stockModel.getStockByWholesalerName(n);
+        let w = req.params.w === '-'? '' : req.params.w;
+        let p = req.params.p === '-'? '' : req.params.p;
+        const response = await stockModel.getStockBySearching(w, p);
         if("error" in response){
             res.status(512).json({"error" : "QUERY ISSUE", "message" : response.error});
         }else{
