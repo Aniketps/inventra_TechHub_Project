@@ -64,10 +64,8 @@ exports.addWholesaler = (name, address, date, phone, email)=>{
             }
         });
     }).then((result)=>{
-        console.log("message is :"+result);
         return { "message" : result}
     }).catch((error)=>{
-        console.log("error is :"+error);
         return { "error" : error }
     });
 };
@@ -78,16 +76,16 @@ exports.getWholesalersBySeaching = (name, addres, date, phone, email)=>{
         let Address = `%${addres}%`;
         let Phone = `%${phone}%`;
         let Email = `%${email}%`;
-        wholesaler.query("select * from wholesalers where wholesalerName like ? and address like ? and phone like ? and email like ?", [Name, Address, Phone, Email], (err, result)=>{
+        wholesaler.query("select wholesalerID, wholesalerName, address, email, phone, DATE_FORMAT(connectedDate, '%Y-%m-%d') AS connectedDate from wholesalers where wholesalerName like ? and address like ? and phone like ? and email like ?", [Name, Address, Phone, Email], (err, result)=>{
             if(err){
                 reject("failed get sales, please try later sometime...");
             }else{
                 let groupsOfWholesalers = {};
                 let group = [];
-                let data = result.filter(row => date == ''? true : row.connectedDate.toISOString().split("T")[0] == date).map(row =>(
+                let data = result.filter(row => date == ''? true : row.connectedDate == date).map(row =>(
                     {
                         ...row,
-                        connectedDate : row.connectedDate.toISOString().split("T")[0]
+                        connectedDate : row.connectedDate
                     }
                 ));
                 data.forEach((item, index)=>{
@@ -146,10 +144,8 @@ exports.deleteWholesalerByID = (id)=>{
             }
         });
     }).then((result)=>{
-        console.log("message is :"+result);
         return { "message" : result}
     }).catch((error)=>{
-        console.log("error is :"+error);
         return { "error" : error }
     });
 };

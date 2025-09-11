@@ -50,7 +50,7 @@ exports.getCatergoryByID = (id)=>{
 exports.getCategoriesBySearching = (name, date)=>{
     return new Promise((resolve, reject)=>{
         let Name = `%${name}%`;
-        let myQuery = "select * from productcategory where categoryName like ?";
+        let myQuery = "select categoryID, categoryName, DATE_FORMAT(createdDate, '%Y-%m-%d') AS createdDate from productcategory where categoryName like ?";
         let myValues = [Name];
         category.query(myQuery, myValues, (err, result)=>{
             if(err){
@@ -59,10 +59,10 @@ exports.getCategoriesBySearching = (name, date)=>{
             }else{
                 let groupsOfCategories = {};
                 let group = [];
-                let data = result.filter(row => date == ''? true : row.createdDate.toISOString().split("T")[0] == date).map(row =>(
+                let data = result.filter(row => date == ''? true : row.createdDate == date).map(row =>(
                     {
                         ...row,
-                        createdDate : row.createdDate.toISOString().split("T")[0]
+                        createdDate : row.createdDate
                     }
                 ));
                 data.forEach((item, index)=>{

@@ -15,9 +15,6 @@ stockRoute.get("/totalcost", stock.getStockByTotalCost);
 // Search by stock selling price
 stockRoute.get("/price", stock.getStockByPrice);
 
-// Search by stock wholesaler name
-stockRoute.get("/:w/:p", stock.getStockBySearching);
-
 // Search by stock wholesaler id
 stockRoute.get("/:w/:p", stock.getStockBySearching);
 

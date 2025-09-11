@@ -52,16 +52,16 @@ exports.getSalesBySearching = (customerName, date, productName, productCategory,
         let ProductName = `%${productName}%`;
         let ProductCategory = `%${productCategory}%`;
         let WholesalerName = `%${wholesalerName}%`;
-        sale.query("select * from (select s.stockID, s.saleID, c.customerName, c.phone, s.purchaseDate, p.productName, cc.categoryName, w.wholesalerName, s.quantity, s.discount, s.tax, s.totalBill from sales s inner join productstocks ps on ps.stockID=s.stockID inner join customers c on c.customerID=s.customerID inner join products p on p.productID=ps.productID inner join productcategory cc on cc.categoryID=p.categoryID inner join wholesalers w on w.wholesalerID=ps.wholesalerID) ss where customerName like ? and productName like ? and categoryName like ? and wholesalerName like ?", [CustomerName, ProductName, ProductCategory, WholesalerName], (err, result)=>{
+        sale.query("select stockID, saleID, customerName, phone, DATE_FORMAT(purchaseDate, '%Y-%m-%d') AS purchaseDate, productName, categoryName, wholesalerName, quantity, discount, tax, totalBill from (select s.stockID, s.saleID, c.customerName, c.phone, s.purchaseDate, p.productName, cc.categoryName, w.wholesalerName, s.quantity, s.discount, s.tax, s.totalBill from sales s inner join productstocks ps on ps.stockID=s.stockID inner join customers c on c.customerID=s.customerID inner join products p on p.productID=ps.productID inner join productcategory cc on cc.categoryID=p.categoryID inner join wholesalers w on w.wholesalerID=ps.wholesalerID) ss where customerName like ? and productName like ? and categoryName like ? and wholesalerName like ?", [CustomerName, ProductName, ProductCategory, WholesalerName], (err, result)=>{
             if(err){
                 reject("failed get sales, please try later sometime...");
             }else{
                 let groupsOfSalers = {};
                 let group = [];
-                let data = result.filter(row => date == ''? true : row.purchaseDate.toISOString().split("T")[0] == date).map(row =>(
+                let data = result.filter(row => date == ''? true : row.purchaseDate == date).map(row =>(
                     {
                         ...row,
-                        purchaseDate : row.purchaseDate.toISOString().split("T")[0]
+                        purchaseDate : row.purchaseDate
                     }
                 ));
                 data.forEach((item, index)=>{
@@ -104,10 +104,8 @@ exports.addSale = (stockID, quantity, discount, tax, totalBill, customerID)=>{
             }
         });
     }).then((result)=>{
-        console.log("message is :"+result);
         return { "message" : result}
     }).catch((error)=>{
-        console.log("error is :"+error);
         return { "error" : error }
     });
 };
@@ -150,10 +148,8 @@ exports.deleteSaleByID = (id)=>{
             }
         });
     }).then((result)=>{
-        console.log("message is :"+result);
         return { "message" : result}
     }).catch((error)=>{
-        console.log("error is :"+error);
         return { "error" : error }
     });
 };

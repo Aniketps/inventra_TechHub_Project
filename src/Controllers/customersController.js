@@ -1,4 +1,5 @@
 const customerModel = require("../Models/customersModel");
+const customerValidation = require("../Validations/customersValidation");
 
 exports.allCustomers = async(req, res)=>{
     const sliceCount = req.query.s;
@@ -29,6 +30,9 @@ exports.addCustomer = async(req, res)=>{
         const email = req.body.email;
         const phone = req.body.phone;
         const address = req.body.address;
+        if(!customerValidation.emailValidation(email)) return res.status(400).json({"error" : "QUERY ISSUE", "message" : "Invalid Email"});
+        if(!customerValidation.nameValidation(name)) return res.status(400).json({"error" : "QUERY ISSUE", "message" : "Invalid Name"});
+        if(!customerValidation.phoneValidation(phone)) return res.status(400).json({"error" : "QUERY ISSUE", "message" : "Invalid Contact Number"});
         if(!name) return res.status(104).json({"error" : "QUERY ISSUE", "message" : "Insufficient data input"});
         const isAdded = await customerModel.addCustomer(name, email, phone, address);
         if("error" in isAdded){

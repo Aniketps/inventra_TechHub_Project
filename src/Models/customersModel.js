@@ -53,7 +53,7 @@ exports.getCustomersBySearching = (name, date, address, email, phone)=>{
         let Phone = `%${phone}%`;
         let Email = `%${email}%`;
         let Address = `%${address}%`;
-        let myQuery = "select * from customers where customerName like ? and email like ? and phone like ? and address like ?";
+        let myQuery = "select customerID, customerName, email, phone, address, DATE_FORMAT(registeredDate, '%Y-%m-%d') AS registeredDate from customers where customerName like ? and email like ? and phone like ? and address like ?";
         let myValues = [Name, Email, Phone, Address];
         customer.query(myQuery, myValues, (err, result)=>{
             if(err){
@@ -61,10 +61,10 @@ exports.getCustomersBySearching = (name, date, address, email, phone)=>{
             }else{
                 let data = result.filter(row => date == ''
                     ? true 
-                    : row.registeredDate.toISOString().split("T")[0] == date).map(row=>(
+                    : row.registeredDate == date).map(row=>(
                         {
                             ...row,
-                            registeredDate : row.registeredDate.toISOString().split("T")[0]
+                            registeredDate : row.registeredDate
                         }
                     )
                 );

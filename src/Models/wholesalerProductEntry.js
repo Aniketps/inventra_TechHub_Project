@@ -50,14 +50,14 @@ exports.getWholesalerProductEntriesBySearching = (productName, wholesalerName, d
     return new Promise((resolve, reject)=>{
         let ProductName = `%${productName}%`;
         let WholesalerName = `%${wholesalerName}%`;
-        wholesalerProductEntry.query("select wpe.wholesalerProductID, p.productName, p.productID, w.wholesalerName, w.wholesalerID, wpe.entryDate, wpe.stock, wpe.costPrice, wpe.totalCost from wholesalerproductentry wpe inner join wholesalers w on wpe.wholesalerID=w.wholesalerID inner join products p on wpe.productID=p.productID where p.productName like ? and w.wholesalerName like ?", [ProductName, WholesalerName], (err, result)=>{
+        wholesalerProductEntry.query("select wpe.wholesalerProductID, p.productName, p.productID, w.wholesalerName, w.wholesalerID, DATE_FORMAT(wpe.entryDate, '%Y-%m-%d') AS entryDate, wpe.stock, wpe.costPrice, wpe.totalCost from wholesalerproductentry wpe inner join wholesalers w on wpe.wholesalerID=w.wholesalerID inner join products p on wpe.productID=p.productID where p.productName like ? and w.wholesalerName like ?", [ProductName, WholesalerName], (err, result)=>{
             if(err){
                 reject("failed get wholesalerProductEntries, please try later sometime...");
             }else{
-                let data = result.filter( row => date == ''? true : row.entryDate.toISOString().split("T")[0] == date).map( row => (
+                let data = result.filter( row => date == ''? true : row.entryDate == date).map( row => (
                     {
                         ...row,
-                        entryDate : row.entryDate.toISOString().split("T")[0]
+                        entryDate : row.entryDate
                     }
                 ))
                 let groupsOfWholesalerProductEntries = {};

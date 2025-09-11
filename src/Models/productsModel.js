@@ -51,15 +51,15 @@ exports.getProductsBySearching = (name, date, category)=>{
     return new Promise((resolve, reject)=>{
         let Name = `%${name}%`;
         let Category = `%${category}%`;
-        product.query("select * from (select p.productID, p.productName, p.createdDate as productCreatedDate, pc.categoryName, pc.createdDate as categoryCreatedDate from products p inner join productcategory pc on p.categoryID=pc.categoryID) pp where productName like ? and categoryName like ?", [Name, Category], (err, result)=>{
+        product.query("select productID, productName, DATE_FORMAT(productCreatedDate, '%Y-%m-%d') AS productCreatedDate, categoryName, DATE_FORMAT(categoryCreatedDate, '%Y-%m-%d') AS categoryCreatedDate from (select p.productID, p.productName, p.createdDate as productCreatedDate, pc.categoryName, pc.createdDate as categoryCreatedDate from products p inner join productcategory pc on p.categoryID=pc.categoryID) pp where productName like ? and categoryName like ?", [Name, Category], (err, result)=>{
             if(err){
                 reject("failed get products, please try later sometime...");
             }else{
-                let data = result.filter(row => date == ''? true : row.productCreatedDate.toISOString().split("T")[0] == date).map( row =>
+                let data = result.filter(row => date == ''? true : row.productCreatedDate == date).map( row =>
                 (
                     {
                         ...row,
-                        productCreatedDate : row.productCreatedDate.toISOString().split("T")[0]
+                        productCreatedDate : row.productCreatedDate
                     }
                 ))
 

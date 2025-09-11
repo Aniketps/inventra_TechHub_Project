@@ -1,4 +1,5 @@
 const wholesalerModel = require("../Models/wholecalersModel");
+const wholesalerValidation = require("../Validations/wholesalersValidation");
 
 exports.allWholesalers = async (req, res) => {
     try {
@@ -29,6 +30,9 @@ exports.addWholesaler = async (req, res) => {
         const phone = req.body.phone;
         const email = req.body.email;
         if (!wholesalerName, !address, !phone, !email) return res.status(104).json({ "error": "QUERY ISSUE", "message": "Insufficient data input" });
+        if (!wholesalerValidation.emailValidation(email)) return res.status(400).json({ "error": "QUERY ISSUE", "message": "Invalid Email" });
+        if (!wholesalerValidation.phoneValidation(phone)) return res.status(400).json({ "error": "QUERY ISSUE", "message": "Invalid Contact Number" });
+        if (!wholesalerValidation.nameValidation(wholesalerName)) return res.status(400).json({ "error": "QUERY ISSUE", "message": "Invalid Name" });
         const isAdded = await wholesalerModel.addWholesaler(wholesalerName, address, phone, email);
         if ("error" in isAdded) {
             res.status(512).json({ "error": "QUERY ISSUE", "message": isAdded.error });
