@@ -1,5 +1,6 @@
 const saleModel = require("../Models/salesModel");
 const productStockModel = require("../Models/productStockModel")
+const sendMail = require("../Services/emailService");
 
 exports.allSales = async (req, res) => {
     try {
@@ -23,35 +24,46 @@ exports.allSales = async (req, res) => {
 }
 
 exports.addSale = async (req, res) => {
-    if (!req.body.stockID, !req.body.purchaseDate, !req.body.quantity, !req.body.discount, !req.body.tax, !req.body.customerID) return res.status(400).json({ "error": "QUERY ISSUE", "message": "Please provide data along with request" });
+    if (!req.body.stockID, !req.body.purchaseDate, !req.body.quantity, !req.body.discount, !req.body.tax, !req.body.customerID, !req.body.emailTo, !req.body.file) return res.status(400).json({ "error": "QUERY ISSUE", "message": "Please provide data along with request" });
     try {
         const stockID = req.body.stockID;
         const quantity = req.body.quantity;
         const discount = req.body.discount;
         const tax = req.body.tax;
         const customerID = req.body.customerID;
+        const emailTo = req.body.emailTo;
+        const file = req.body.file;
+        const html = req.body.html;
+        const subject = req.body.subject;
         if (!stockID, !quantity, !discount, !tax, !customerID) return res.status(104).json({ "error": "QUERY ISSUE", "message": "Insufficient data input" });
 
         let stockStock = await productStockModel.getStockByID(stockID);
         if ("error" in stockStock) {
             res.status(512).json({ "error": "QUERY ISSUE", "message": stockStock.error });
         } else {
-            if(stockStock.message.length == 0){
-                res.status(422).json({"error" : "QUERY ISSUE", "message" : "Insufficient Stock"});
+            if (stockStock.message.length == 0) {
+                res.status(422).json({ "error": "QUERY ISSUE", "message": "Insufficient Stock" });
             }
-            else{
+            else {
                 if (stockStock.message[0].stock >= quantity) {
                     let newStock = parseInt(stockStock.message[0].stock) - parseInt(quantity);
-                    let total = newStock*parseInt(stockStock.message[0].sellingPrice);
+                    let total = newStock * parseInt(stockStock.message[0].sellingPrice);
                     let isUpdated = await productStockModel.updateStockStockByID(stockID, total, newStock);
                     if ("error" in isUpdated) {
                         res.status(512).json({ "error": "QUERY ISSUE", "message": isUpdated.error });
                     } else {
-                        const isAdded = await saleModel.addSale(stockID, quantity, discount, tax, ((parseInt(quantity)*parseInt(stockStock.message[0].sellingPrice)) - parseInt(discount) + parseInt(tax)), customerID);
+                        const isAdded = await saleModel.addSale(stockID, quantity, discount, tax, ((parseInt(quantity) * parseInt(stockStock.message[0].sellingPrice)) - parseInt(discount) + parseInt(tax)), customerID);
                         if ("error" in isAdded) {
                             await productStockModel.updateStockStockByID(stockID, total, newStock);
                             res.status(512).json({ "error": "QUERY ISSUE", "message": isAdded.error });
                         } else {
+                            await sendMail(emailTo, subject, html, [
+                                {
+                                    filename: `invoice_${Date.now()}.pdf`,
+                                    content: file,
+                                    encoding: "base64"
+                                }
+                            ]);
                             res.status(201).json({ "error": "NO ISSUE", "message": isAdded.message });
                         }
                     }
@@ -118,11 +130,11 @@ exports.getSaleBySearching = async (req, res) => {
 }
 
 exports.updateSaleByID = async (req, res) => {
-    if (!req.params.id || !req.body.stockID || !req.body.quantity || !req.body.discount || !req.body.tax|| !req.body.customerID) return res.status(400).json({ "error": "QUERY ISSUE", "message": "Please provide data and id" });
+    if (!req.params.id || !req.body.stockID || !req.body.quantity || !req.body.discount || !req.body.tax || !req.body.customerID) return res.status(400).json({ "error": "QUERY ISSUE", "message": "Please provide data and id" });
     try {
         let id = req.params.id;
-        let stockID = req.body.stockID; 
-        let quantity = req.body.quantity; 
+        let stockID = req.body.stockID;
+        let quantity = req.body.quantity;
         let discount = req.body.discount;
         let tax = req.body.tax;
         let customerID = req.body.customerID;
@@ -130,11 +142,11 @@ exports.updateSaleByID = async (req, res) => {
         if ("error" in stockStock) {
             res.status(512).json({ "error": "QUERY ISSUE", "message": stockStock.error });
         } else {
-            if(stockStock.message.length == 0){
-                res.status(422).json({"error" : "QUERY ISSUE", "message" : "Insufficient Stock"});
+            if (stockStock.message.length == 0) {
+                res.status(422).json({ "error": "QUERY ISSUE", "message": "Insufficient Stock" });
             }
-            else{
-                let totalBill = (parseInt(quantity)*parseInt(stockStock.message[0].sellingPrice)) - parseInt(discount) + parseInt(tax);
+            else {
+                let totalBill = (parseInt(quantity) * parseInt(stockStock.message[0].sellingPrice)) - parseInt(discount) + parseInt(tax);
                 const response = await saleModel.updateSaleByID(id, stockID, quantity, discount, tax, totalBill, customerID);
                 if ("error" in response) {
                     res.status(512).json({ "error": "QUERY ISSUE", "message": response.error });
